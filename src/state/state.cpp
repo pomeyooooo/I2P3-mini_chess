@@ -11,10 +11,154 @@
  * 
  * @return int 
  */
-int State::evaluate(){
-  // [TODO] design your own evaluation function
-  return 0;
+
+// int State::evaluate(){
+  
+//     const int pawnValue = 1;
+//     const int knightValue = 3;
+//     const int bishopValue = 3;
+//     const int rookValue = 5;
+//     const int queenValue = 9;
+
+//     int score = 0;
+
+//     // Evaluate the board for the current player
+//     for (int row = 0; row < BOARD_H; row++) {
+//       for (int col = 0; col < BOARD_W; col++) {
+//         int piece = board.board[player][row][col];
+
+//         // Evaluate the piece based on its type
+//         switch (piece) {
+//           case 1:  // Pawn
+//             score += pawnValue;
+//             break;
+//           case 2:  // Rook
+//             score += rookValue;
+//             break;
+//           case 3:  // Knight
+//             score += knightValue;
+//             break;
+//           case 4:  // Bishop
+//             score += bishopValue;
+//             break;
+//           case 5:  // Queen
+//             score += queenValue;
+//             break;
+//           case 6:  // King
+//             break;
+//           default:
+//             break;
+//         }
+
+//         Evaluate the piece's positional advantage
+//         switch (piece) {
+//           case 1:  // Pawn
+//             score += (this->player == 0) ? (row + 1) : (BOARD_H - row);
+//             break;
+//           case 2:  // Rook
+//             score += (this->player == 0) ? (row + 1) : (BOARD_H - row);
+//             break;
+//           default:
+//             break;
+//         }
+//       }
+//     }
+//     return score;
+// }
+
+int State::evaluate() {
+  const int kingValue = INT_MAX;
+  const int queenValue = 100;
+  const int rookValue = 50;
+  const int bishopValue = 30;
+  const int knightValue = 30;
+  const int pawnValue = 10;
+
+  int score = 0;
+
+  // Evaluate the board for the current player
+  for (int row = 0; row < BOARD_H; row++) {
+    for (int col = 0; col < BOARD_W; col++) {
+      int piece = board.board[player][row][col];
+      int opponentPiece = board.board[1 - player][row][col];
+
+      // Evaluate the player's piece
+      switch (piece) {
+        case 1:  // Pawn
+          score += pawnValue;
+          break;
+        case 2:  // Rook
+          score += rookValue;
+          break;
+        case 3:  // Knight
+          score += knightValue;
+          break;
+        case 4:  // Bishop
+          score += bishopValue;
+          break;
+        case 5:  // Queen
+          score += queenValue;
+          break;
+        case 6:  // King
+          score += kingValue;
+          break;
+        default:
+          break;
+      }
+
+      // Evaluate the opponent's piece
+      switch (opponentPiece) {
+        case 1:  // Pawn
+          score -= pawnValue;
+          break;
+        case 2:  // Rook
+          score -= rookValue;
+          break;
+        case 3:  // Knight
+          score -= knightValue;
+          break;
+        case 4:  // Bishop
+          score -= bishopValue;
+          break;
+        case 5:  // Queen
+          score -= queenValue;
+          break;
+        case 6:  // King
+          score -= kingValue;
+          break;
+        default:
+          break;
+      }
+
+      // Consider the piece's position
+      switch (piece) {
+        case 1:  // Pawn
+          score += (this->player == 0) ? (row + 1) : (BOARD_H - row);
+          break;
+        case 2:  // Rook
+          score += (this->player == 0) ? (row + 1) : (BOARD_H - row);
+          break;
+        default:
+          break;
+      }
+
+      // Consider the opponent's piece position
+      switch (opponentPiece) {
+        case 1:  // Pawn
+          score -= (this->player == 1) ? (row + 1) : (BOARD_H - row);
+          break;
+        case 2:  // Rook
+          score -= (this->player == 1) ? (row + 1) : (BOARD_H - row);
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  return score;
 }
+
 
 
 /**
@@ -26,7 +170,7 @@ int State::evaluate(){
 State* State::next_state(Move move){
   Board next = this->board;
   Point from = move.first, to = move.second;
-  
+
   int8_t moved = next.board[this->player][from.first][from.second];
   //promotion for pawn
   if(moved == 1 && (to.first==BOARD_H-1 || to.first==0)){
@@ -35,12 +179,12 @@ State* State::next_state(Move move){
   if(next.board[1-this->player][to.first][to.second]){
     next.board[1-this->player][to.first][to.second] = 0;
   }
-  
+
   next.board[this->player][from.first][from.second] = 0;
   next.board[this->player][to.first][to.second] = moved;
-  
+
   State* next_state = new State(next, 1-this->player);
-  
+
   if(this->game_state != WIN)
     next_state->get_legal_actions();
   return next_state;
@@ -262,3 +406,58 @@ std::string State::encode_state(){
   }
   return ss.str();
 }
+
+// int State::getPieceMobility() {
+//   int currentPlayerMoves = 0;
+//   int opponentMoves = 0;
+
+//   // Calculate the number of legal moves for the current player
+//   for (const Move& move : legal_actions) {
+//     State* nextState = next_state(move);
+//     currentPlayerMoves += nextState->legal_actions.size();
+//     delete nextState;
+//   }
+
+//   // Calculate the number of legal moves for the opponent
+//   for (const Move& move : legal_actions) {
+//     State* nextState = next_state(move);
+//     opponentMoves += nextState->legal_actions.size();
+//     delete nextState;
+//   }
+
+//   return currentPlayerMoves - opponentMoves;
+// }
+
+
+// int State::evaluateKingSafety() {
+//   // Get the position of the current player's king
+//   Point kingPos;
+//   bool foundKing = false;
+//   for (int i = 0; i < BOARD_H; i++) {
+//     for (int j = 0; j < BOARD_W; j++) {
+//       if (board.board[player][i][j] == 6) {
+//         kingPos = Point(i, j);
+//         foundKing = true;
+//         break;
+//       }
+//     }
+//     if (foundKing) break;
+//   }
+
+//   if (!foundKing) return 0;  // King not found (should not happen)
+
+//   int kingSafetyScore = 0;
+
+//   // Check for threats from opponent pieces
+//   for (const Move& move : legal_actions) {
+//     State* nextState = next_state(move);
+//     int toPiece = nextState->board.board[player][move.second.first][move.second.second];
+//     if (toPiece > 0 && toPiece < 6) {
+//       // The current player's king is under threat
+//       kingSafetyScore -= 1;
+//     }
+//     delete nextState;
+//   }
+
+//   return kingSafetyScore;
+// }

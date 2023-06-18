@@ -3,8 +3,10 @@
 
 #include <string>
 #include <cstdlib>
+#include <climits>
 #include <vector>
 #include <utility>
+#include <algorithm>
 
 #include "../config.hpp"
 
