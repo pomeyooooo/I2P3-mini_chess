@@ -5,29 +5,29 @@ int Minimax::evaluate(State* state, int player) {
     return state->evaluate(player);
 }
 
-int Minimax::minimax(State* state, int depth, int isMaxPlayer) {
+int Minimax::minimax(State* state, int depth, int Player) {
     if (depth == 0 || !state->legal_actions.size()) {
     // Base case: evaluate the state if it's a terminal state or reached maximum depth
-        return evaluate(state, isMaxPlayer);
+        return evaluate(state, Player);
     }
 
-    if (isMaxPlayer == state->player) {
+    if (Player == state->player) {
         int value = INT_MIN;
         state->get_legal_actions();
 
         for (const auto& action : state->legal_actions) {
             State* next = state->next_state(action);
-            value = std::max(value, minimax(next, depth - 1, isMaxPlayer));
+            value = std::max(value, minimax(next, depth - 1, Player));
         }
         return value;
     } 
     else {
         int value = INT_MAX;
         state->get_legal_actions();
-
+ 
         for (const auto& action : state->legal_actions) {
             State* next = state->next_state(action);
-            value = std::min(value, minimax(next, depth - 1, isMaxPlayer));
+            value = std::min(value, minimax(next, depth - 1, Player));
         }
         return value;
     }

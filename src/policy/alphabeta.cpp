@@ -6,19 +6,19 @@ int AlphaBeta::evaluate(State* state, int player) {
     return state->evaluate(player);
 }
 
-int AlphaBeta::alphabeta(State* state, int depth, int alpha, int beta, int maximizingPlayer) {
+int AlphaBeta::alphabeta(State* state, int depth, int alpha, int beta, int Player) {
     if (depth == 0 || !state->legal_actions.size()) {
         // Base case: evaluate the state
-        return evaluate(state, maximizingPlayer);
+        return evaluate(state, Player);
     }
 
-    if (maximizingPlayer == state->player) {
+    if (Player == state->player) {
         int value = INT_MIN;
         state->get_legal_actions();
 
         for (const auto& action : state->legal_actions) {
             State* next = state->next_state(action);
-            value = std::max(value, alphabeta(next, depth - 1, alpha, beta, maximizingPlayer));
+            value = std::max(value, alphabeta(next, depth - 1, alpha, beta, Player));
             alpha = std::max(alpha, value);
             if (alpha >= beta)
                 break; // Beta cut-off
@@ -30,7 +30,7 @@ int AlphaBeta::alphabeta(State* state, int depth, int alpha, int beta, int maxim
 
         for (const auto& action : state->legal_actions) {
             State* next = state->next_state(action);
-            value = std::min(value, alphabeta(next, depth - 1, alpha, beta, maximizingPlayer));
+            value = std::min(value, alphabeta(next, depth - 1, alpha, beta, Player));
             beta = std::min(beta, value);
             if (alpha >= beta)
                 break; // Alpha cut-off

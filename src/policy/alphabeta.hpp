@@ -10,6 +10,6 @@
 class AlphaBeta {
 public:
     static int evaluate(State* state, int player);
-    static int alphabeta(State* state, int depth, int alpha, int beta, int maximizingPlayer);
+    static int alphabeta(State* state, int depth, int alpha, int beta, int Player);
     static Move get_move(State* state, int depth);
 };

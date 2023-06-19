@@ -10,6 +10,6 @@
 class Minimax {
 public:
     static int evaluate(State* state, int);
-    static int minimax(State* state, int depth, int isMaxPlayer);
+    static int minimax(State* state, int depth, int Player);
     static Move get_move(State* state, int depth);
 };
