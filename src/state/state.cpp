@@ -16,9 +16,26 @@ int State::evaluate(int mplayer) {
     const int kingValue = INT_MAX;
     const int queenValue = 100;
     const int rookValue = 50;
-    const int bishopValue = 30;
     const int knightValue = 30;
+    const int bishopValue = 30;
     const int pawnValue = 10;
+    static const int queenScoreTablew[BOARD_H][BOARD_W] = {
+        {0, 0, 0, 0, 0},
+        {1, 1, 1, 1, 1},
+        {2, 2, 3, 2, 2},
+        {2, 3, 4, 3, 2},
+        {1, 3, 4, 3, 1},
+        {1, 2, 2, 2, 1},
+    };
+    static const int queenScoreTableb[BOARD_H][BOARD_W] = {
+        {1, 2, 2, 2, 1},
+        {1, 3, 4, 3, 1},
+        {2, 3, 4, 3, 2},
+        {2, 2, 3, 2, 2},
+        {1, 1, 1, 1, 1},
+        {0, 0, 0, 0, 0},
+    };
+
 
     int score = 0;
 
@@ -31,19 +48,19 @@ int State::evaluate(int mplayer) {
             // Evaluate the player's piece
             switch (piece) {
                 case 1:  // Pawn
-                    score += pawnValue;
+                    score += pawnValue + (mplayer == 0 ? row : (BOARD_H - (row - 1)));
                     break;
                 case 2:  // Rook
                     score += rookValue;
                     break;
                 case 3:  // Knight
-                    score += knightValue;
+                    score += knightValue + this->legal_actions.size();
                     break;
                 case 4:  // Bishop
-                    score += bishopValue;
+                    score += bishopValue + this->legal_actions.size();
                     break;
                 case 5:  // Queen
-                    score += queenValue;
+                    score += queenValue + (mplayer == 0 ? queenScoreTablew[row][col] : queenScoreTableb[row][col]);
                     break;
                 case 6:  // King
                     score += kingValue;
@@ -55,19 +72,19 @@ int State::evaluate(int mplayer) {
             // Evaluate the opponent's piece
             switch (opponentPiece) {
                 case 1:  // Pawn
-                    score -= pawnValue;
+                    score -= pawnValue + (mplayer == 1 ? row : (BOARD_H - (row - 1)));
                     break;
                 case 2:  // Rook
                     score -= rookValue;
                     break;
                 case 3:  // Knight
-                    score -= knightValue;
+                    score -= knightValue + this->legal_actions.size();
                     break;
                 case 4:  // Bishop
-                    score -= bishopValue;
+                    score -= bishopValue + this->legal_actions.size();
                     break;
                 case 5:  // Queen
-                    score -= queenValue;
+                    score -= queenValue + (mplayer == 1 ? queenScoreTablew[row][col] : queenScoreTableb[row][col]);
                     break;
                 case 6:  // King
                     score -= kingValue;
